@@ -13,19 +13,19 @@ Desenvolver uma web API utilizando **Django Rest Framework** para receber webhoo
 ## 📌 Requisitos
 
 1.	Criar dois modelos principais:
-	- `Conversation`
-	- `Message` (relacionado a uma `Conversation`)
+    - `Conversation`
+    - `Message` (relacionado a uma `Conversation`)
 2.	A API deve:
-	- Receber eventos via POST no endpoint `localhost/webhook/`
-	- Criar instâncias dos modelos correspondentes
+    - Receber eventos via POST no endpoint `localhost/webhook/`
+    - Criar instâncias dos modelos correspondentes
 3.	Criar um endpoint GET em `localhost/conversations/{id}` para expor a conversa, incluindo:
-	- Seu estado (`OPEN` ou `CLOSED`)
-	- Suas mensagens
+    - Seu estado (`OPEN` ou `CLOSED`)
+    - Suas mensagens
 4.	Lidar com erros de maneira graceful (evitar retornos de erro 500).
 5.	Restrições:
-	- Uma `Conversation` deve ter um estado. Os estados possíveis são: `OPEN` e `CLOSED`
-	- Uma `CLOSED` `Conversation` não pode receber novas mensagens
-	- Uma `Message` deve ter dois tipos: `SENT` e `RECEIVED`
+    - Uma `Conversation` deve ter um estado. Os estados possíveis são: `OPEN` e `CLOSED`
+    - Uma `CLOSED` `Conversation` não pode receber novas mensagens
+    - Uma `Message` deve ter dois tipos: `SENT` e `RECEIVED`
 6.	O banco de dados utilizado deve ser SQLite.
 7.	O código deve ser enviado para um repositório privado no GitHub criado por nós.
 
@@ -139,6 +139,13 @@ python manage.py migrate
 ```bash
 python manage.py runserver
 ```
+
+
+## Configuração do Frontend
+
+O frontend deste projeto foi desenvolvido em React. Para instalar e configurar, siga as instruções abaixo:  
+
+➡️ [Guia de Instalação do Frontend](realmate-frontend/README.md)
 
 
 ## 📌 Entrega e Requisitos

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { getConversations, getConversationById, sendMessage } from "../api"; // Criamos a função sendMessage
+import { getConversations, getConversationById, sendMessage } from "../api";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { v4 as uuidv4 } from "uuid"; // Para gerar IDs únicos
+import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 
 export default function Conversations() {
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
-  const [messageInput, setMessageInput] = useState(""); // Estado do input de mensagem
+  const [messageInput, setMessageInput] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -25,12 +26,12 @@ export default function Conversations() {
   };
 
   const handleSendMessage = async () => {
-    if (!selectedConversation || !messageInput.trim()) return;
+    if (!selectedConversation || !messageInput.trim() || selectedConversation.status === "CLOSED") return;
 
     const newMessage = {
       type: "NEW_MESSAGE",
       data: {
-        id: uuidv4(), // Gerando um ID único
+        id: uuidv4(),
         conversation_id: selectedConversation.id,
         direction: "SENT",
         content: messageInput,
@@ -39,17 +40,38 @@ export default function Conversations() {
     };
 
     try {
-      await sendMessage(newMessage); // Envia a mensagem para a API
+      await sendMessage(newMessage);
 
-      // Atualiza o estado local para exibir a nova mensagem na tela
       setSelectedConversation((prev) => ({
         ...prev,
         messages: [...prev.messages, newMessage.data],
       }));
 
-      setMessageInput(""); // Limpa o campo de input
+      setMessageInput("");
     } catch (error) {
       console.error("Erro ao enviar mensagem:", error);
+    }
+  };
+
+  const handleCloseConversation = async () => {
+    if (!selectedConversation) return;
+
+    const payload = {
+      type: "CLOSE_CONVERSATION",
+      data: { id: selectedConversation.id },
+    };
+
+    try {
+      await axios.post("http://127.0.0.1:8000/api/webhook/", payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      setSelectedConversation((prev) => ({
+        ...prev,
+        status: "CLOSED",
+      }));
+    } catch (error) {
+      console.error("Erro ao fechar conversa:", error);
     }
   };
 
@@ -85,6 +107,20 @@ export default function Conversations() {
             ) : selectedConversation ? (
               <>
                 <h4>Conversa: {selectedConversation.id}</h4>
+
+                {/* Botão Fechar Conversa (aparece apenas se estiver aberta) */}
+                {selectedConversation.status === "OPEN" && (
+                  <button className="btn btn-danger mb-3" onClick={handleCloseConversation}>
+                    Fechar Conversa
+                  </button>
+                )}
+
+                <p className={selectedConversation.status === "CLOSED" ? "text-danger fw-bold" : ""}>
+                  {selectedConversation.status === "CLOSED"
+                    ? " 🚫 Mensagem fechada. Sem permissão para enviar ou receber mensagens."
+                    : ""}
+                </p>
+
                 <div className="chat-box">
                   {selectedConversation.messages.map((msg) => (
                     <div
@@ -101,27 +137,21 @@ export default function Conversations() {
             )}
           </div>
 
-          {/* Exibição de status da conversa */}
-          {selectedConversation && selectedConversation.status === "CLOSED" ? (
-            <p className="text-center fw-bold text-danger p-3">
-              🚫 Mensagem fechada. Sem permissão para enviar ou receber mensagens.
-            </p>
-          ) : (
-            selectedConversation && (
-              <div className="p-3 border-top d-flex">
-                <input
-                  type="text"
-                  className="form-control me-2"
-                  placeholder="Digite sua mensagem..."
-                  value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                />
-                <button className="btn btn-primary" onClick={handleSendMessage}>
-                  Enviar
-                </button>
-              </div>
-            )
+          {/* Campo de entrada de mensagem */}
+          {selectedConversation && selectedConversation.status === "OPEN" && (
+            <div className="p-3 border-top d-flex">
+              <input
+                type="text"
+                className="form-control me-2"
+                placeholder="Digite sua mensagem..."
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+              />
+              <button className="btn btn-primary" onClick={handleSendMessage}>
+                Enviar
+              </button>
+            </div>
           )}
         </div>
       </div>
