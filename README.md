@@ -184,6 +184,7 @@ docker-compose up --build
 ```
 
 O backend estará disponível em `http://localhost:8000`.
+O fropnt estará disponível em `http://localhost:3000`.
 
 Para parar os containers:
 
