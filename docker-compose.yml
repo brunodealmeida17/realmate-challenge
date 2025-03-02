@@ -1,0 +1,28 @@
+services:
+  backend:
+    build:
+      context: ./realmate_challenge_back
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./realmate_challenge_back:/app
+      - sqlite_data:/app/db  # Persistência do SQLite
+    environment:
+      - DEBUG=True
+    restart: always
+
+  frontend:
+    depends_on:
+      - backend
+    image: node:22
+    working_dir: /app
+    volumes:
+      - ./realmate-frontend:/app
+    ports:
+      - "3000:3000"
+    command: ["sh", "-c", "npm install && npm start"]
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+volumes:
+  sqlite_data:

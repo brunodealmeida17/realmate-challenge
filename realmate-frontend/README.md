@@ -12,13 +12,13 @@ Antes de iniciar, certifique-se de ter instalado em sua máquina:
 1. Clone o repositório:
 
    ```bash
-   git clone https://github.com/seu-usuario/nome-do-repositorio.git
+   git clone https://github.com/brunodealmeida17/realmate-challenge
    ```
 
 2. Acesse o diretório do projeto:
 
    ```bash
-   cd nome-do-repositorio
+   cd realmate-challenge/realmate-frontend
    ```
 
 3. Instale as dependências do projeto:
@@ -35,10 +35,11 @@ Antes de iniciar, certifique-se de ter instalado em sua máquina:
 
 ## 🔧 Configuração
 
-1. Renomeie o arquivo `.env-example` para `.env`:
+1. Caso necessario alterar a url de comunicação com api em `api.js` em:
 
    ```bash
-   mv .env-example .env
+   realmate-challenge/realmate-frontend/src/api.js
+   const API_BASE_URL = "http://localhost:8000/api";
    ```
 
 2. Edite o arquivo `.env` e configure a URL da API que está rodando:
